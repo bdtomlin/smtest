@@ -5,9 +5,8 @@ class DepthTester
     self.new(rank)
   end
 
-  def initialize(rank, level)
+  def initialize(rank)
     @rank = rank
-    @level = level
   end
 
   def includes_depth(depth)
