@@ -1,28 +1,53 @@
+require 'mechanize'
+
 class Enrollment
-  def initialize(user, products)
+  def initialize(user, options)
     @user = user
-    @products = products
+    @options = options
   end
 
   def enroll
-    sign_up_as_reseller if @products[:reseller]
-    sign_up_for_service unless @products[:reseller]
+    if @options[:service_only]
+      sign_up_for_service
+    else
+      sign_up_as_reseller
+    end
   end
 
   private
 
+    def try_3
+      times_tried = 0
+      begin
+        yield
+      rescue
+        times_tried += 1
+        puts times_tried
+        sleep 2
+        retry if times_tried < 3
+        raise
+      end
+    end
+
+    def agent
+      @agent ||= Mechanize.new
+    end
+
+    def get(url)
+      try_3 { agent.get(url) }
+    end
+
     def sign_up_for_service
-      agent = Mechanize.new
-      page = agent.get("http://socialmine-staging.com/#{@user.sponsor}/cart")
+      page = get("http://socialmine-staging.com/#{@user.sponsor}")
+      page = page.link_with(text: 'Sign Up Now').click
       process_enrollment(agent, page)
     end
 
     def sign_up_as_reseller
-      agent = Mechanize.new
-      product_page = agent.get("http://socialmine-staging.com/#{@user.sponsor}/cart?reseller=true")
-      form = product_page.forms.first
-      form.checkbox_with(value: "voffice").check if @products[:voffice]
-      form.checkbox_with(value: "service").check if @products[:service]
+      page = get("http://socialmine-staging.com/#{@user.sponsor}/cart?reseller=true")
+      form = page.forms.first
+      form.checkbox_with(value: "voffice").check unless @options[:no_voffice]
+      form.checkbox_with(value: "service").check unless @options[:no_service]
 
       process_enrollment(agent, agent.submit(form))
     end
@@ -30,7 +55,13 @@ class Enrollment
     def process_enrollment(agent, page)
       form = page.forms.first
       fill_in_attrs(form)
-      confirmation_page = agent.submit(form)
+      confirmation_page = try_3 { agent.submit(form) }
+      unless confirmation_page.search(".flash>h1").text.strip =~ /^Thank you/
+        puts "ERROR: enroll problem for #{@user.socialmine_id}"
+        confirmation_page.search(".field_with_errors").each do |el|
+          puts el.text
+        end
+      end
     end
 
     def fill_in_attrs(form)
@@ -42,7 +73,7 @@ class Enrollment
     def fill_in_subscriber_attrs(form)
       subscriber_attrs = [:first_name, :last_name, :email, :phone_number, :password,
                           :password_confirmation, :socialmine_id ]
-      subscriber_attrs << :commission_id if @products[:reseller]
+      subscriber_attrs << :commission_id unless @options[:service_only]
       subscriber_attrs.each do |attr|
         name = attr.to_s.sub("_confirmation","")
         value = @user.instance_variable_get("@#{name}")
