@@ -11,9 +11,13 @@ class Strategy
     end
 
     def sponsor_users(n)
+      threads = []
       n.times do
         user = @user.sponsor_someone
-        yield(user) if block_given?
+        if block_given?
+          threads << Thread.new { yield(user) }
+        end
       end
+      threads.each { |thread| thread.join }
     end
 end

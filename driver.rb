@@ -5,17 +5,18 @@ require_relative 'gold_strategy'
 require_relative 'ruby_strategy'
 require_relative 'diamond_strategy'
 
-u = User.with_sponsor("nikita_nader6910530")
+u = User.with_sponsor("therock")
 # optionally pass these to sign up
 # service_only, no_voffice, no_service
 u.sign_up
 # u.sign_up(no_voffice: true, no_service: true)
 # u.sign_up(service_only: true)
 
+
 # promote user to selected rank
-# u.promote_with(SilverStrategy.new)
+u.promote_with(SilverStrategy.new)
 # u.promote_with(GoldStrategy.new)
-u.promote_with(RubyStrategy.new)
+# u.promote_with(RubyStrategy.new)
 # u.promote_with(DiamondStrategy.new)
 
 # put some depth to test the tree view
