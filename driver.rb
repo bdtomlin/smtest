@@ -6,6 +6,9 @@ require_relative 'ruby_strategy'
 require_relative 'diamond_strategy'
 
 u = User.with_sponsor("therock")
+# u = User.new("adonis_crist8114667")
+# u = User.new("therock", "sociallink")
+# u.email = "bdtomlin+socialtwit2@gmail.com"
 # optionally pass these to sign up
 # service_only, no_voffice, no_service
 u.sign_up
@@ -14,17 +17,16 @@ u.sign_up
 
 
 # promote user to selected rank
-u.promote_with(SilverStrategy.new)
+# u.promote_with(SilverStrategy.new)
 # u.promote_with(GoldStrategy.new)
 # u.promote_with(RubyStrategy.new)
 # u.promote_with(DiamondStrategy.new)
 
 # put some depth to test the tree view
-# u = User.new("therock", "sheridan_schmeler8792989")
+# u = User.new("therock", "leonardo_casper1256535")
 # users = [u]
 # 10.times do
-  # users << users.last.sponsor_someone
-  # u.sponsor_someone
+#   users << users.last.sponsor_someone
 # end
 
 # test the depth reqirement

@@ -6,8 +6,9 @@ require_relative 'enrollment'
 require_relative 'promoter'
 
 class User
-  attr_reader :sponsor, :first_name, :last_name, :socialmine_id, :email,
-              :password, :commission_id, :address, :payment_information
+  attr_reader :sponsor, :first_name, :last_name, :socialmine_id,
+    :email, :password, :commission_id, :address, :payment_information
+  attr_writer :email
 
   def self.with_sponsor(sponsor)
     self.new(sponsor)
