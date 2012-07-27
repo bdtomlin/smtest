@@ -6,7 +6,6 @@ require_relative 'ruby_strategy'
 require_relative 'diamond_strategy'
 
 u = User.with_sponsor("therock")
-# u = User.new("adonis_crist8114667")
 # u = User.new("therock", "sociallink")
 # u.email = "bdtomlin+socialtwit2@gmail.com"
 # optionally pass these to sign up
@@ -18,7 +17,7 @@ u.sign_up
 
 # promote user to selected rank
 # u.promote_with(SilverStrategy.new)
-# u.promote_with(GoldStrategy.new)
+ u.promote_with(GoldStrategy.new)
 # u.promote_with(RubyStrategy.new)
 # u.promote_with(DiamondStrategy.new)
 
